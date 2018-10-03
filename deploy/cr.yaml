@@ -1,0 +1,4 @@
+apiVersion: "github.awgreene.com/v1alpha1"
+kind: "Hello"
+metadata:
+  name: "example"
