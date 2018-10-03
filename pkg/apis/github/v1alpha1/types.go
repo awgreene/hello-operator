@@ -22,8 +22,11 @@ type Hello struct {
 }
 
 type HelloSpec struct {
-	// Fill me
+	// Size is the size of the hello deployment
+	Size  int32  `json:"size"`
+	World string `json:"world"`
 }
 type HelloStatus struct {
-	// Fill me
+	// Nodes are the names of the hello pods
+	Nodes []string `json:"nodes"`
 }

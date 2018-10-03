@@ -1,4 +1,7 @@
 apiVersion: "github.awgreene.com/v1alpha1"
 kind: "Hello"
 metadata:
-  name: "example"
+  name: "hello-go"
+spec:
+  size: 1
+  world: "Alex"
