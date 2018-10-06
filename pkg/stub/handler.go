@@ -46,15 +46,17 @@ func (h *Handler) Handle(ctx context.Context, event sdk.Event) error {
 			return fmt.Errorf("failed to get deployment: %v", err)
 		}
 		size := hello.Spec.Size
-		if *dep.Spec.Replicas != size {
+		world := hello.Spec.World
+
+		if *dep.Spec.Replicas != size || dep.Spec.Template.Spec.Containers[0].Env[0].Value != world {
 			dep.Spec.Replicas = &size
+			dep.Spec.Template.Spec.Containers[0].Env[0].Value = world
 			err = sdk.Update(dep)
 			if err != nil {
 				return fmt.Errorf("failed to update deployment: %v", err)
 			}
 		}
 
-		// Update the Memcached status with the pod names
 		podList := podList()
 		labelSelector := labels.SelectorFromSet(labelsForHello(hello.Name)).String()
 		listOps := &metav1.ListOptions{LabelSelector: labelSelector}
