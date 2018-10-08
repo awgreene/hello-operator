@@ -1,0 +1,4 @@
+---
+tests:
+  operator:
+    sdk-version: v0.0.7

@@ -45,54 +45,10 @@ $ export REGISTRY=<SOME_REGISTRY> \
 ```
 
 5. Update the controller logic by changing the `pkg/stub/handler.go` file to match the same file in this repo. Make sure not to replace your hello-operator project import.
+	
+	NOTE: Notice that we watch for new values for each field defined in the `HelloSpec` strcuture found in `pkg/apis/cache/v1alpha1/types.go` as shown on  [line 51](https://github.com/awgreene/hello-operator/blob/master/pkg/stub/handler.go#L51).
 
-    NOTE: While many of the functions are fairly intuitive, notice that the Deployment yaml is defined within the deploymentForHello function.
-```Go
-// deploymentForHello returns a Hello Deployment object
-func deploymentForHello(m *v1alpha1.Hello) *appsv1.Deployment {
-	ls := labelsForHello(m.Name)
-	replicas := m.Spec.Size
-
-	dep := &appsv1.Deployment{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "apps/v1",
-			Kind:       "Deployment",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      m.Name,
-			Namespace: m.Namespace,
-		},
-		Spec: appsv1.DeploymentSpec{
-			Replicas: &replicas,
-			Selector: &metav1.LabelSelector{
-				MatchLabels: ls,
-			},
-			Template: v1.PodTemplateSpec{
-				ObjectMeta: metav1.ObjectMeta{
-					Labels: ls,
-				},
-				Spec: v1.PodSpec{
-					Containers: []v1.Container{{
-						Image:   "docker.io/agreene/hello-go", // The image the operator deploys. It should match `$REGISTRY/$NAMESPACE/$REPOSITORY:$TAG`
-						Name:    "hello",
-						Command: []string{"go", "run", "main.go"},
-						Ports: []v1.ContainerPort{{
-							ContainerPort: 8000, // The port the container listens on
-							Name:          "hello",
-						}},
-						Env: []v1.EnvVar{{
-							Name:  "WORLD", // The WORLD environment variable
-							Value: m.Spec.World,
-						}},
-					}},
-				},
-			},
-		},
-	}
-	addOwnerRefToObject(dep, asOwner(m))
-	return dep
-}
-```
+    NOTE: Notice that the Deployment yaml is defined within the deploymentForHello function on [line 79](https://github.com/awgreene/hello-operator/blob/master/pkg/stub/handler.go#L79)
 
 6. Build and push the hello-operator image to a public registry such as quay.io.
 ```bash
@@ -155,3 +111,17 @@ Hello, Go Programmer!
 ```
 
 With that, you have successfully create the Hello Operator. Try changing the size of the deployment and the message!
+
+## Testing with the Operator SDK
+It's possible to use the Operator SDK for end-to-end testing. In this example, our tests will deploy two clusters in ephemeral namespaces that will scale four hello-go images.
+1. Copy the `tests` directory from this repo to your project.
+
+2. Make sure all dependencies are in your project.
+```bash
+$ dep ensure
+```
+
+3. Run the tests using the operator sdk.
+```bash
+$ operator-sdk test --test-location ./tests/e2e
+```

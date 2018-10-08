@@ -3,5 +3,5 @@ kind: "Hello"
 metadata:
   name: "hello-go"
 spec:
-  size: 1
-  world: "Alex"
+  size: 2
+  world: "Go Programmer"

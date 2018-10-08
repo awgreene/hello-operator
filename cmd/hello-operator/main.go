@@ -24,6 +24,12 @@ func main() {
 	printVersion()
 
 	sdk.ExposeMetricsPort()
+	metrics, err := stub.RegisterOperatorMetrics()
+	if err != nil {
+		logrus.Errorf("failed to register operator specific metrics: %v", err)
+	}
+
+	h := stub.NewHandler(metrics)
 
 	resource := "github.awgreene.com/v1alpha1"
 	kind := "Hello"
@@ -34,6 +40,6 @@ func main() {
 	resyncPeriod := time.Duration(5) * time.Second
 	logrus.Infof("Watching %s, %s, %s, %d", resource, kind, namespace, resyncPeriod)
 	sdk.Watch(resource, kind, namespace, resyncPeriod)
-	sdk.Handle(stub.NewHandler())
+	sdk.Handle(h)
 	sdk.Run(context.TODO())
 }

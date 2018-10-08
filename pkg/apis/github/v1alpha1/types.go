@@ -23,9 +23,12 @@ type Hello struct {
 
 type HelloSpec struct {
 	// Size is the size of the hello deployment
-	Size  int32  `json:"size"`
+	Size int32 `json:"size"`
+
+	// World is an Environment variable passed into the containers
 	World string `json:"world"`
 }
+
 type HelloStatus struct {
 	// Nodes are the names of the hello pods
 	Nodes []string `json:"nodes"`
